@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 
+template <typename T> 
 void log_message(const std::string &message) {
     std::string log_file = "/log.txt";
     std::ofstream out(log_file, std::ios_base::app); // append mode

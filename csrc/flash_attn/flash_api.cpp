@@ -20,7 +20,7 @@
 #define CHECK_SHAPE(x, ...) TORCH_CHECK(x.sizes() == torch::IntArrayRef({__VA_ARGS__}), #x " must have shape (" #__VA_ARGS__ ")")
 #define CHECK_CONTIGUOUS(x) TORCH_CHECK(x.is_contiguous(), #x " must be contiguous")
 
-void log_message(const std::string &message) {
+void log_message2(const std::string &message) {
     std::string log_file = "/log.txt";
     std::ofstream out(log_file, std::ios_base::app); // append mode
     if (out.is_open()) {
@@ -129,9 +129,9 @@ void set_params_fprop(Flash_fwd_params &params,
         params.scale_softmax_log2 = softmax_scale * M_LOG2E;
     }
 
-    log_message("params.softcap " +  std::to_string(params.softcap));
-    log_message("params.scale_softmax " +  std::to_string(params.scale_softmax));
-    log_message("params.scale_softmax_log2 " +  std::to_string(params.scale_softmax_log2));
+    log_message2("params.softcap " +  std::to_string(params.softcap));
+    log_message2("params.scale_softmax " +  std::to_string(params.scale_softmax));
+    log_message2("params.scale_softmax_log2 " +  std::to_string(params.scale_softmax_log2));
 
     // Set this to probability of keeping an element to simplify things.
     params.p_dropout = 1.f - p_dropout;
