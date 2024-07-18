@@ -24,9 +24,17 @@ using namespace cute;
 
 template <typename Engine, typename Layout>
 __forceinline__ __device__ void apply_softcap(Tensor<Engine, Layout> &tensor, const float softcap){
+    static_assert(Layout::rank == 3, "Only support 3D Tensor");
+    static_assert(decltype(size<0>(tensor))::value == 4, "First dimension must be 4");
     #pragma unroll
-    for (int i = 0; i < size(tensor); ++i) {
-        tensor(i) = cutlass::fast_tanh(tensor(i) * 0.0016666666666666666);
+    for (int i=0; i < size<0>(tensor); ++i){  // MMA
+        #pragma unroll
+        for (int mi=0; mi < size<1>(tensor); ++mi){
+            #pragma unroll
+            for (int nj=0; nj < size<2>(tensor); ++nj){
+                tensor(i, mi, nj) = cutlass::fast_tanh(make_tensor(tensor(i, mi, nj).data() * softcap, flash::convert_layout_acc_rowcol(tensor(i, mi, nj).layout()));
+            }
+        }
     }
 }
 
@@ -326,7 +334,7 @@ inline __device__ void compute_attn_1rowblock(const Params &params, const int bi
             smem_thr_copy_Q, smem_thr_copy_K
         );
         // if (cute::thread0()) { print(acc_s); }
-        if constexpr (Is_softcap){
+        if (params.softcap > 0.0) {
             apply_softcap(acc_s, params.softcap);
         }
 
@@ -392,7 +400,7 @@ inline __device__ void compute_attn_1rowblock(const Params &params, const int bi
             acc_s, tSrQ, tSrK, tSsQ, tSsK, tiled_mma, smem_tiled_copy_Q, smem_tiled_copy_K,
             smem_thr_copy_Q, smem_thr_copy_K
         );
-        if constexpr (Is_softcap){
+        if (params.softcap > 0.0) {
             apply_softcap(acc_s, params.softcap);
         }
 
@@ -886,7 +894,7 @@ inline __device__ void compute_attn_1rowblock_splitkv(const Params &params, cons
             smem_thr_copy_Q, smem_thr_copy_K
         );
         // if (cute::thread0()) { print(acc_s); }
-        if constexpr (Is_softcap){
+        if (params.softcap > 0.0) {
             apply_softcap(acc_s, params.softcap);
         }
 
@@ -961,7 +969,7 @@ inline __device__ void compute_attn_1rowblock_splitkv(const Params &params, cons
             acc_s, tSrQ, tSrK, tSsQ, tSsK, tiled_mma, smem_tiled_copy_Q, smem_tiled_copy_K,
             smem_thr_copy_Q, smem_thr_copy_K
         );
-        if constexpr (Is_softcap){
+        if (params.softcap > 0.0) {
             apply_softcap(acc_s, params.softcap);
         }
 

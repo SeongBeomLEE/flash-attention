@@ -13,24 +13,9 @@
 #include "flash.h"
 #include "static_switch.h"
 
-#include <iostream>
-#include <fstream>
-
 #define CHECK_DEVICE(x) TORCH_CHECK(x.is_cuda(), #x " must be on CUDA")
 #define CHECK_SHAPE(x, ...) TORCH_CHECK(x.sizes() == torch::IntArrayRef({__VA_ARGS__}), #x " must have shape (" #__VA_ARGS__ ")")
 #define CHECK_CONTIGUOUS(x) TORCH_CHECK(x.is_contiguous(), #x " must be contiguous")
-
-void log_message2(const std::string &message) {
-    std::string log_file = "/log.txt";
-    std::ofstream out(log_file, std::ios_base::app); // append mode
-    if (out.is_open()) {
-        out << message << std::endl;
-        out.close();
-    } else {
-        std::cerr << "Unable to open log file: " << log_file << std::endl;
-    }
-}
-
 
 void set_params_fprop(Flash_fwd_params &params,
                       // sizes
@@ -128,10 +113,6 @@ void set_params_fprop(Flash_fwd_params &params,
         params.scale_softmax = softmax_scale;
         params.scale_softmax_log2 = softmax_scale * M_LOG2E;
     }
-
-    log_message2("params.softcap " +  std::to_string(params.softcap));
-    log_message2("params.scale_softmax " +  std::to_string(params.scale_softmax));
-    log_message2("params.scale_softmax_log2 " +  std::to_string(params.scale_softmax_log2));
 
     // Set this to probability of keeping an element to simplify things.
     params.p_dropout = 1.f - p_dropout;
