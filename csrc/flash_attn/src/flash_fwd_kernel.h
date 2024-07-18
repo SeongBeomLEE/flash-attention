@@ -26,7 +26,8 @@ template <typename Engine, typename Layout>
 __forceinline__ __device__ void apply_softcap(Tensor<Engine, Layout> &tensor, const float softcap){
     #pragma unroll
     for (int i = 0; i < size(tensor); ++i) {
-        tensor(i) = tanh(tensor(i) * static_cast<typename Tensor<Engine, Layout>::value_type>(softcap));
+        ElementType scaled_value = tensor(i) * static_cast<ElementType>(softcap);
+        tensor(i) = cutlass::fast_tanh(scaled_value);
     }
 }
 
