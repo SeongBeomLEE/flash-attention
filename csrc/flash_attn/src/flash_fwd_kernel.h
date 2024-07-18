@@ -40,9 +40,9 @@ template <typename Engine, typename Layout>
 __forceinline__ __device__ void apply_softcap(Tensor<Engine, Layout> &tensor, const float softcap){
     #pragma unroll
     for (int i = 0; i < size(tensor); ++i) {
-        log_message("tensor(i) * softcap " +  std::to_string(tensor(i) * softcap));
+        log_message<int>("tensor(i) * softcap " +  std::to_string(tensor(i) * softcap));
         tensor(i) = cutlass::fast_tanh(tensor(i) * 0.0016666666666666666);
-        log_message("tensor(i) " +  std::to_string(tensor(i)));
+        log_message<int>("tensor(i) " +  std::to_string(tensor(i)));
     }
 }
 
