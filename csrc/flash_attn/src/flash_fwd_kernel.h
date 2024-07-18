@@ -17,8 +17,6 @@
 #include "mask.h"
 #include "dropout.h"
 #include "rotary.h"
-#include <iostream>
-#include <fstream>
 
 namespace flash {
 
@@ -27,14 +25,9 @@ using namespace cute;
 template <typename Engine, typename Layout>
 __forceinline__ __device__ void apply_softcap(Tensor<Engine, Layout> &tensor, const float softcap){
     #pragma unroll
-    std::string log_file = "/log.txt";
-    std::ofstream out(log_file, std::ios_base::app); // append mode
     for (int i = 0; i < size(tensor); ++i) {
-        out << "tensor(i) * softcap " +  std::to_string(tensor(i) * softcap) << std::endl;
         tensor(i) = cutlass::fast_tanh(tensor(i) * 0.0016666666666666666);
-        out << "tensor(i) " +  std::to_string(tensor(i)) << std::endl;
     }
-    out.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
