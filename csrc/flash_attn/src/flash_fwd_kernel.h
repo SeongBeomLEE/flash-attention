@@ -20,6 +20,10 @@
 #include <iostream>
 #include <fstream>
 
+namespace flash {
+
+using namespace cute;
+
 template <typename T> 
 void log_message(const std::string &message) {
     std::string log_file = "/log.txt";
@@ -31,10 +35,6 @@ void log_message(const std::string &message) {
         std::cerr << "Unable to open log file: " << log_file << std::endl;
     }
 }
-
-namespace flash {
-
-using namespace cute;
 
 template <typename Engine, typename Layout>
 __forceinline__ __device__ void apply_softcap(Tensor<Engine, Layout> &tensor, const float softcap){
