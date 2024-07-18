@@ -32,7 +32,7 @@ __forceinline__ __device__ void apply_softcap(Tensor<Engine, Layout> &tensor, co
         for (int mi=0; mi < size<1>(tensor); ++mi){
             #pragma unroll
             for (int nj=0; nj < size<2>(tensor); ++nj){
-                float tmp_val = fast_tanh(tensor(i, mi, nj) * softcap);
+                float tmp_val = cutlass::fast_tanh(tensor(i, mi, nj) * softcap);
                 tensor(i, mi, nj) = tmp_val;
             }
         }
