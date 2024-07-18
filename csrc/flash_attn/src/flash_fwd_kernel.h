@@ -24,26 +24,17 @@ namespace flash {
 
 using namespace cute;
 
-template <typename T> 
-void log_message(const std::string &message) {
-    std::string log_file = "/log.txt";
-    std::ofstream out(log_file, std::ios_base::app); // append mode
-    if (out.is_open()) {
-        out << message << std::endl;
-        out.close();
-    } else {
-        std::cerr << "Unable to open log file: " << log_file << std::endl;
-    }
-}
-
 template <typename Engine, typename Layout>
 __forceinline__ __device__ void apply_softcap(Tensor<Engine, Layout> &tensor, const float softcap){
     #pragma unroll
+    std::string log_file = "/log.txt";
+    std::ofstream out(log_file, std::ios_base::app); // append mode
     for (int i = 0; i < size(tensor); ++i) {
-        log_message<int>("tensor(i) * softcap " +  std::to_string(tensor(i) * softcap));
+        out << "tensor(i) * softcap " +  std::to_string(tensor(i) * softcap) << std::endl;
         tensor(i) = cutlass::fast_tanh(tensor(i) * 0.0016666666666666666);
-        log_message<int>("tensor(i) " +  std::to_string(tensor(i)));
+        out << "tensor(i) " +  std::to_string(tensor(i)) << std::endl;
     }
+    out.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
