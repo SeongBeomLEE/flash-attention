@@ -25,9 +25,8 @@ using namespace cute;
 template <typename Engine, typename Layout>
 __forceinline__ __device__ void apply_softcap(Tensor<Engine, Layout> &tensor, const float softcap){
     #pragma unroll
-    auto softcap_tensor = make_tensor(softcap, Int<1>{});
     for (int i = 0; i < size(tensor); ++i) {
-        tensor(i) = cutlass::fast_tanh(tensor(i) * softcap_tensor(0));
+        tensor(i) = tanh(tensor(i) * softcap);
     }
 }
 
